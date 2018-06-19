@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>FWT - online shopping case study</title>
+	<meta charset="UTF-8">
+	
+	<script type="text/javascript" src="js/react.js"></script>
+	<script type="text/javascript" src="js/react-dom.js"></script>
+	<script type="text/javascript" src="js/babel.min.js"></script>
+
+	<script type="text/babel">
+		class Login extends React.Component {
+
+			constructor() {
+				super();
+				this.state = {
+					username : '',
+					password : ''
+				};
+			}
+
+			setUserName(event) {
+				this.setState({
+					username: event.target.value
+				});
+			}
+
+			displayUserName() {
+				ReactDOM.render(<UserHeader username={`Hi ` + this.state.username + ` !`} />, document.getElementById("user-name"));
+				ReactDOM.render(<Product />, document.getElementById("main-section"));
+			}
+
+			render() {
+				return(
+						<div>
+						<input  type="text" placeholder="Username" value={this.state.username} onChange={event => this.setUserName(event)}></input><br/>
+						<input  type="password" placeholder="Password" id="password"></input><br/>
+						<button onClick={this.displayUserName.bind(this)}>Login</button>
+						</div>
+					
+				);
+			}
+
+		}
+
+	
+
+		class UserHeader extends React.Component {
+
+			logout() {
+				ReactDOM.render(<Login />, document.getElementById("main-section"));
+				ReactDOM.render(<div></div>, document.getElementById("user-name"));
+			}
+
+			render() {
+				return(
+					<nav>
+						<p>{this.props.username}</p>
+						<button onClick={this.logout.bind(this)}>Logout</button>
+					</nav>
+				);
+			}
+		}
+
+		class Product extends React.Component {
+			constructor() {
+				super();
+				this.state = {
+					products : [
+						{id: 1, name: 'bags', price: 10000, brand: 'Allen Solly'},
+						{id: 2, name: 'shoes', price: 30000, brand: 'Carlton London'},
+						{id: 3, name: 'Jeans', price: 25000, brand: 'Levis'},
+						{id: 4, name: 'Watch', price: 5000, brand: 'Casio'},
+						{id: 5, name: 'Perfume', price: 7000, brand: 'Calvin Klein'},
+					],
+
+					productsAddedToCart: [],
+					totalAmount:0
+				};
+			}
+
+			getProductBasedOnId(id) {
+				for (var i = 0; i < this.state.products.length; i++) {
+				    if(this.state.products[i].id == id){
+				    	this.state.productsAddedToCart.push(this.state.products[i]);
+				    	this.setState({
+							productsAddedToCart: this.state.productsAddedToCart
+						});
+				    }
+				}
+			}
+
+			calculateTotalAmount() {
+				let sum = 0;
+				this.state.productsAddedToCart.forEach(element => {
+  					sum = sum + element.price;
+				});
+				this.setState({
+					totalAmount:sum
+				});
+			}
+	
+
+
+			render() {
+				return(
+					<div>
+						<div>
+							<h3>Products</h3>
+						    {this.state.products.map((item, index) => (
+						       <RenderProduct 
+						       		key={item.id.toString()}
+						       		name={item.name} 
+						       		price={`Rs. ` + item.price + `/- only`}
+						       		brand={item.brand}
+						       		getProductBasedOnId={(id) => { this.getProductBasedOnId(item.id); }}
+						       />
+						    ))}
+						</div>
+
+						<div>
+							<h1>Cart</h1>
+						    {this.state.productsAddedToCart.map((item, index) => (
+						       <RenderProductsInCart 
+						       		key={item.id.toString()}
+						       		name={item.name} 
+						       		price={`Rs. ` + item.price + `/- only`}
+						       		brand={item.brand}
+							   />
+							
+							))}
+							
+							<div>
+								<button onClick={this.calculateTotalAmount.bind(this)}>buy</button>
+								<br/>
+								TotalAmount: {this.state.totalAmount}
+							</div>
+						</div>
+					</div>
+					
+				);
+			}
+
+		}
+
+		class RenderProduct extends React.Component {
+			render() {
+				return(					
+					<div> 
+			              <div>
+			                    <div>
+			                         <p>{this.props.name}</p>
+			                         <p>{this.props.brand}</p>
+			                         <p>{this.props.price}</p>
+			                         <button onClick={this.props.getProductBasedOnId}>ADD TO CART</button>
+			                    </div>
+			              </div>
+			        </div>					
+				);
+			}
+		}
+
+		class RenderProductsInCart extends React.Component {
+			render() {
+				return(					
+					<div> 
+			            <div>
+			                <p>{this.props.name}</p>
+			                <p>{this.props.brand}</p>
+			                <p>{this.props.price}</p>
+						</div>	
+							
+			        </div>					
+				);
+			}
+		}
+
+		function loadLoginForm() {
+			ReactDOM.render(<Login />, document.getElementById("main-section"));
+		}
+	</script>
+
+</head>
+<body onload="loadLoginForm()">
+	<header>
+		<div id="user-name"></div>
+	</header>
+
+	<section id="main-section" class="container light-background"></section>
+
+	<footer class="container">
+			<p>
+				footer
+			</p>
+	
+	</footer>
+</body>
+</html>
